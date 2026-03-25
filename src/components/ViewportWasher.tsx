@@ -12,9 +12,10 @@ const SEGMENTS = 24
 // Simulated focal length for the perspective projection. Higher = less distortion.
 const PERSPECTIVE = 700
 
-// Face colours: top/bottom annular rings share one colour;
+// Face colours: top and bottom annular rings each have their own colour;
 // outer and inner cylindrical walls each have their own.
-const COLOR_TOP = '#385c78'
+const COLOR_TOP = '#90cddd'
+const COLOR_BOT = '#2c6271'
 const COLOR_OUTER = '#539caf'
 const COLOR_INNER = '#539caf'
 const STROKE = 'black'
@@ -79,7 +80,7 @@ function buildHalf(side: 'front' | 'back'): Face[] {
 
     // Bottom annular strip (Y_BOT face) — winding reversed so normal faces down
     faces.push({
-      color: COLOR_TOP,
+      color: COLOR_BOT,
       kind: 'bot-ring',
       verts: [
         [OUTER_R * cos(j), Y_BOT, OUTER_R * sin(j)],
@@ -243,9 +244,11 @@ function drawFaces(
 
   for (const { face, proj } of visible) {
     const color =
-      (colorTop && face.kind === 'top-ring') ? colorTop :
-      (colorBot && face.kind === 'bot-ring') ? colorBot :
-      face.color
+      colorTop && face.kind === 'top-ring'
+        ? colorTop
+        : colorBot && face.kind === 'bot-ring'
+          ? colorBot
+          : face.color
 
     // Fill the quad
     ctx.beginPath()
@@ -522,7 +525,13 @@ export function ViewportWasher({
   return (
     <>
       <div style={{ ...wrapperStyle, zIndex: zBack }}>
-        <WasherCanvas faces={BACK_FACES} seams={BACK_SEAMS} zIndex={0} colorTop={colorTop} colorBot={colorBot} />
+        <WasherCanvas
+          faces={BACK_FACES}
+          seams={BACK_SEAMS}
+          zIndex={0}
+          colorTop={colorTop}
+          colorBot={colorBot}
+        />
       </div>
       <div style={{ ...wrapperStyle, zIndex: zFront }}>
         <WasherCanvas
