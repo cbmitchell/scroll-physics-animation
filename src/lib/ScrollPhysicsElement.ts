@@ -70,6 +70,8 @@ export interface ScrollPhysicsOptions {
   splatRecoverySpeed?: number
 }
 
+export type TunableOpts = Required<Omit<ScrollPhysicsOptions, 'getScrollPosition' | 'anchorLowerScrollPosition'>>
+
 export interface FrameNames {
   upward: string[]
   neutral: string

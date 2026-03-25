@@ -1,7 +1,5 @@
 import { useEffect, useRef, type MutableRefObject } from 'react'
-import type { ScrollPhysicsElement, ScrollPhysicsOptions } from '../lib/ScrollPhysicsElement'
-
-type Opts = Required<Omit<ScrollPhysicsOptions, 'getScrollPosition' | 'anchorLowerScrollPosition'>>
+import type { ScrollPhysicsElement, TunableOpts } from '../lib/ScrollPhysicsElement'
 
 const BAR_W = 140
 const BAR_H = 8
@@ -52,7 +50,7 @@ export function PhysicsHUD({
 }: {
   instanceRef: MutableRefObject<ScrollPhysicsElement | null>
   isOpen: boolean
-  opts: Opts
+  opts: TunableOpts
 }) {
   // Keep opts accessible inside the rAF loop without re-running the effect
   const optsRef = useRef(opts)
