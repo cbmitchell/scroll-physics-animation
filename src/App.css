@@ -1,0 +1,148 @@
+/* ── Layout ──────────────────────────────────────────────────────────────── */
+
+.app {
+  display: flex;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* The scrollable scene takes up all remaining space */
+.scene {
+  flex: 1;
+  position: relative;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  background: #1a1f2e;
+}
+
+/* Tall content area so there's room to scroll */
+.page {
+  position: relative;
+  width: 100%;
+}
+
+/* ── Controls panel ──────────────────────────────────────────────────────── */
+
+.controls {
+  width: 280px;
+  flex-shrink: 0;
+  background: #0f1117;
+  border-left: 1px solid #2a2d3a;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.controls-inner {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.controls-title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7c8299;
+  margin: 0 0 12px;
+}
+
+/* ── Sections ────────────────────────────────────────────────────────────── */
+
+.ctrl-section {
+  margin-bottom: 12px;
+}
+
+.ctrl-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #4a5068;
+  padding: 6px 0 4px;
+  border-bottom: 1px solid #1e2130;
+  margin-bottom: 6px;
+}
+
+/* ── Control rows ────────────────────────────────────────────────────────── */
+
+.ctrl-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 0;
+  cursor: pointer;
+}
+
+.ctrl-label {
+  font-size: 11px;
+  color: #8b92aa;
+  width: 110px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: ui-monospace, Consolas, monospace;
+}
+
+.ctrl-value {
+  font-size: 11px;
+  color: #5c6480;
+  width: 40px;
+  text-align: right;
+  flex-shrink: 0;
+  font-family: ui-monospace, Consolas, monospace;
+}
+
+/* Range input */
+.ctrl-row input[type='range'] {
+  flex: 1;
+  min-width: 0;
+  height: 3px;
+  cursor: pointer;
+  accent-color: #4f8ef7;
+}
+
+/* Select */
+.ctrl-row select {
+  flex: 1;
+  font-size: 11px;
+  background: #1a1f2e;
+  color: #8b92aa;
+  border: 1px solid #2a2d3a;
+  border-radius: 4px;
+  padding: 2px 4px;
+  cursor: pointer;
+  font-family: ui-monospace, Consolas, monospace;
+}
+
+/* Checkbox toggle */
+.ctrl-toggle input[type='checkbox'] {
+  cursor: pointer;
+  accent-color: #4f8ef7;
+  width: 14px;
+  height: 14px;
+}
+
+/* ── Reset button ────────────────────────────────────────────────────────── */
+
+.reset-btn {
+  margin-top: 8px;
+  padding: 7px 12px;
+  font-size: 11px;
+  font-family: ui-monospace, Consolas, monospace;
+  background: #1a1f2e;
+  color: #7c8299;
+  border: 1px solid #2a2d3a;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.reset-btn:hover {
+  background: #222840;
+  color: #a0a8c0;
+}
