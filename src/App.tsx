@@ -90,7 +90,6 @@ export default function App() {
 
           <Section title="Anchor">
             <Toggle label="enabled" value={tunableOpts.anchorEnabled} onChange={(v) => set('anchorEnabled', v)} />
-            <Slider label="upperPosition" value={tunableOpts.anchorUpperScrollPosition} min={0} max={800} step={1} onChange={(v) => set('anchorUpperScrollPosition', v)} />
             <Slider label="verticalOffset" value={tunableOpts.anchorVerticalOffset} min={0} max={100} step={1} onChange={(v) => set('anchorVerticalOffset', v)} />
           </Section>
 

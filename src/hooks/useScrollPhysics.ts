@@ -59,7 +59,7 @@ export function useScrollPhysics(
 
     // Anchor
     if (options.anchorEnabled != null)                p.setAnchorEnabled(options.anchorEnabled);
-    if (options.anchorUpperScrollPosition != null)     p.setAnchorUpperScrollPosition(options.anchorUpperScrollPosition);
+    if (options.anchorUpperScrollPosition !== undefined) p.setAnchorUpperScrollPosition(options.anchorUpperScrollPosition);
     if (options.anchorLowerScrollPosition != null)     p.setAnchorLowerScrollPosition(options.anchorLowerScrollPosition);
     if (options.anchorVerticalOffset != null)          p.setAnchorVerticalOffset(options.anchorVerticalOffset);
 
