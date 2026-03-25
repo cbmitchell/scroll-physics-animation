@@ -9,8 +9,8 @@ const INNER_R = 150
 const DEPTH = 30
 const SEGMENTS = 24
 
-// Simulated focal length for the perspective projection. Higher = less distortion.
-const PERSPECTIVE = 700
+// Default simulated focal length for the perspective projection. Higher = less distortion.
+const DEFAULT_FOCAL_LENGTH = 700
 
 // Face colours: top and bottom annular rings each have their own colour;
 // outer and inner cylindrical walls each have their own.
@@ -187,9 +187,10 @@ function project(
   oy: number,
   cx: number,
   cy: number,
+  perspective: number,
 ): [number, number] {
   // scale < 1 for points behind centre (positive Z), > 1 for points in front (negative Z)
-  const scale = PERSPECTIVE / (PERSPECTIVE + v[2])
+  const scale = perspective / (perspective + v[2])
   return [cx + (v[0] - ox) * scale + ox, cy + (v[1] - oy) * scale + oy]
 }
 
@@ -215,6 +216,7 @@ function drawFaces(
   drawFlatEdges = false,
   colorTop?: string,
   colorBot?: string,
+  perspective = DEFAULT_FOCAL_LENGTH,
 ) {
   const cx = ctx.canvas.width / 2
   const cy = ctx.canvas.height / 2
@@ -223,7 +225,7 @@ function drawFaces(
 
   const visible = faces
     .map((face) => {
-      const proj = face.verts.map((v) => project(v, ox, oy, cx, cy)) as [
+      const proj = face.verts.map((v) => project(v, ox, oy, cx, cy, perspective)) as [
         number,
         number,
       ][]
@@ -283,9 +285,9 @@ function drawFaces(
   const Y_T = -DEPTH / 2,
     Y_B = DEPTH / 2
   const nzOf = (v0: Vec3, v1: Vec3, v2: Vec3) => {
-    const p0 = project(v0, ox, oy, cx, cy)
-    const p1 = project(v1, ox, oy, cx, cy)
-    const p2 = project(v2, ox, oy, cx, cy)
+    const p0 = project(v0, ox, oy, cx, cy, perspective)
+    const p1 = project(v1, ox, oy, cx, cy, perspective)
+    const p2 = project(v2, ox, oy, cx, cy, perspective)
     return (p1[0] - p0[0]) * (p2[1] - p0[1]) - (p1[1] - p0[1]) * (p2[0] - p0[0])
   }
   // Top ring winding: outer-i, outer-j, inner-j (matches buildHalf top strip)
@@ -320,7 +322,7 @@ function drawFaces(
     // neighbouring wall face is also culled — nothing on either side to show.
     if (!ringFacing && seam.skipWhenHidden) continue
 
-    const proj = seam.verts.map((v) => project(v, ox, oy, cx, cy))
+    const proj = seam.verts.map((v) => project(v, ox, oy, cx, cy, perspective))
 
     // For flat edge drawing: scan the outer seams (identified by !skipWhenHidden
     // on the front canvas) for their screen-space left/right extremes.
@@ -435,6 +437,7 @@ function WasherCanvas({
   drawFlatEdges = false,
   colorTop,
   colorBot,
+  focalLength = DEFAULT_FOCAL_LENGTH,
 }: {
   faces: Face[]
   seams: Seam[]
@@ -442,17 +445,32 @@ function WasherCanvas({
   drawFlatEdges?: boolean
   colorTop?: string
   colorBot?: string
+  focalLength?: number
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const wrapperRef = useRef<HTMLDivElement>(null)
+  const posRef = useRef({ ox: 0, oy: 0 })
+  const focalLengthRef = useRef(focalLength)
 
   useViewportOrigin(wrapperRef, (ox, oy) => {
+    posRef.current = { ox, oy }
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')
     if (!ctx) return
-    drawFaces(ctx, faces, seams, ox, oy, drawFlatEdges, colorTop, colorBot)
+    drawFaces(ctx, faces, seams, ox, oy, drawFlatEdges, colorTop, colorBot, focalLengthRef.current)
   })
+
+  // Redraw when focalLength changes (the RAF loop only fires on position change)
+  useEffect(() => {
+    focalLengthRef.current = focalLength
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    const { ox, oy } = posRef.current
+    drawFaces(ctx, faces, seams, ox, oy, drawFlatEdges, colorTop, colorBot, focalLength)
+  }, [focalLength]) // intentionally omitting faces/seams/drawFlatEdges/colorTop/colorBot — module-level constants or stable props
 
   // Keep canvas pixel dimensions in sync with the wrapper's layout size.
   // (Assigning canvas.width/height also clears the canvas, so the next RAF
@@ -505,6 +523,8 @@ export interface ViewportWasherProps {
   colorTop?: string
   /** Override color for the bottom annular ring face. */
   colorBot?: string
+  /** Simulated focal length for perspective projection. Higher = less distortion (default: 700). */
+  focalLength?: number
 }
 
 export function ViewportWasher({
@@ -513,6 +533,7 @@ export function ViewportWasher({
   zFront = Z_FRONT,
   colorTop,
   colorBot,
+  focalLength,
 }: ViewportWasherProps = {}) {
   const wrapperStyle: CSSProperties = {
     position: 'absolute',
@@ -531,6 +552,7 @@ export function ViewportWasher({
           zIndex={0}
           colorTop={colorTop}
           colorBot={colorBot}
+          focalLength={focalLength}
         />
       </div>
       <div style={{ ...wrapperStyle, zIndex: zFront }}>
@@ -541,6 +563,7 @@ export function ViewportWasher({
           zIndex={0}
           colorTop={colorTop}
           colorBot={colorBot}
+          focalLength={focalLength}
         />
       </div>
     </>

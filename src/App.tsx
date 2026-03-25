@@ -15,6 +15,7 @@ const PAGE_HEIGHT = 500 // dvh units
 const NUM_RINGS = 5
 const PHYSICS_IMAGE_PATH = '/images/physics_animation_frames/'
 const PHYSICS_NUM_FRAMES = 10
+const DEFAULT_FOCAL_LENGTH = 700
 
 export default function App() {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -24,6 +25,9 @@ export default function App() {
   })
   const [controlsOpen, setControlsOpen] = useState(true)
   const [hudOpen, setHudOpen] = useState(false)
+  const [washersVisible, setWashersVisible] = useState(true)
+  const [washerFocalLength, setWasherFocalLength] =
+    useState(DEFAULT_FOCAL_LENGTH)
 
   function set<K extends keyof TunableOpts>(key: K, value: TunableOpts[K]) {
     setTunableOpts((prev) => ({ ...prev, [key]: value }))
@@ -34,19 +38,21 @@ export default function App() {
       {/* ── Scrollable scene ── */}
       <div className="scene" ref={scrollContainerRef}>
         <div className="page" style={{ height: `${PAGE_HEIGHT}dvh` }}>
-          {Array.from({ length: NUM_RINGS }, (_, i) => (
-            <ViewportWasher
-              key={i}
-              zBack={999}
-              zFront={1001}
-              style={{
-                position: 'absolute',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                top: `${(PAGE_HEIGHT / NUM_RINGS) * (i + 0.65) * 0.85}dvh`,
-              }}
-            />
-          ))}
+          {washersVisible &&
+            Array.from({ length: NUM_RINGS }, (_, i) => (
+              <ViewportWasher
+                key={i}
+                zBack={999}
+                zFront={1001}
+                focalLength={washerFocalLength}
+                style={{
+                  position: 'absolute',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  top: `${(PAGE_HEIGHT / NUM_RINGS) * (i + 0.65) * 0.85}dvh`,
+                }}
+              />
+            ))}
         </div>
 
         <ScrollPhysicsImage
@@ -209,9 +215,29 @@ export default function App() {
             />
           </Section>
 
+          <Section title="Washers">
+            <Toggle
+              label="visible"
+              value={washersVisible}
+              onChange={setWashersVisible}
+            />
+            <Slider
+              label="focalLength"
+              value={washerFocalLength}
+              min={100}
+              max={2000}
+              step={10}
+              onChange={setWasherFocalLength}
+            />
+          </Section>
+
           <button
             className="reset-btn"
-            onClick={() => setTunableOpts({ ...TUNABLE_DEFAULTS })}
+            onClick={() => {
+              setTunableOpts({ ...TUNABLE_DEFAULTS })
+              setWashersVisible(true)
+              setWasherFocalLength(DEFAULT_FOCAL_LENGTH)
+            }}
           >
             Reset to defaults
           </button>
