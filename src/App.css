@@ -22,6 +22,16 @@
   width: 100%;
 }
 
+.page--stripes {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 200px,
+    rgba(255, 255, 255, 0.035) 200px,
+    rgba(255, 255, 255, 0.035) 400px
+  );
+}
+
 /* ── Controls panel ──────────────────────────────────────────────────────── */
 
 .controls {

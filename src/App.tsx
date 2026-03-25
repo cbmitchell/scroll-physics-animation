@@ -26,6 +26,7 @@ export default function App() {
   const [controlsOpen, setControlsOpen] = useState(true)
   const [hudOpen, setHudOpen] = useState(false)
   const [washersVisible, setWashersVisible] = useState(true)
+  const [stripesVisible, setStripesVisible] = useState(true)
   const [washerFocalLength, setWasherFocalLength] =
     useState(DEFAULT_FOCAL_LENGTH)
 
@@ -37,7 +38,7 @@ export default function App() {
     <div className="app">
       {/* ── Scrollable scene ── */}
       <div className="scene" ref={scrollContainerRef}>
-        <div className="page" style={{ height: `${PAGE_HEIGHT}dvh` }}>
+        <div className={`page${stripesVisible ? ' page--stripes' : ''}`} style={{ height: `${PAGE_HEIGHT}dvh` }}>
           {washersVisible &&
             Array.from({ length: NUM_RINGS }, (_, i) => (
               <ViewportWasher
@@ -224,10 +225,18 @@ export default function App() {
             <Slider
               label="focalLength"
               value={washerFocalLength}
-              min={100}
+              min={400}
               max={2000}
               step={10}
               onChange={setWasherFocalLength}
+            />
+          </Section>
+
+          <Section title="Scene">
+            <Toggle
+              label="stripes"
+              value={stripesVisible}
+              onChange={setStripesVisible}
             />
           </Section>
 
@@ -237,6 +246,7 @@ export default function App() {
               setTunableOpts({ ...TUNABLE_DEFAULTS })
               setWashersVisible(true)
               setWasherFocalLength(DEFAULT_FOCAL_LENGTH)
+              setStripesVisible(true)
             }}
           >
             Reset to defaults
