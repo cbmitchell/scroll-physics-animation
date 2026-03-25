@@ -121,7 +121,7 @@ export const TUNABLE_DEFAULTS: TunableOpts = {
 
   // Splat animation
   splatEnabled: true,
-  splatSeverity: 0.002,
+  splatSeverity: 0.001,
   splatRecoverySpeed: 0.2,
 }
 
