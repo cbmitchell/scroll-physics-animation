@@ -24,7 +24,7 @@
 
 export type ThresholdMode = 'linear' | 'exponential'
 
-type AnchorState = 'none' | 'upper' | 'lower' | 'following'
+export type AnchorState = 'none' | 'upper' | 'lower' | 'following'
 
 /** Returns the current scroll position in pixels. */
 export type ScrollPositionProvider = () => number
@@ -707,6 +707,29 @@ export class ScrollPhysicsElement {
   // Scroll position source
   setGetScrollPosition(fn: ScrollPositionProvider): void {
     this.getScrollPosition = fn
+  }
+
+  // State snapshot
+  getState(): {
+    smoothedVelocity: number
+    smoothedAcceleration: number
+    netForce: number
+    forceIntensityLevels: number[]
+    targetFrame: number
+    currentDisplayFrame: number
+    anchorState: AnchorState
+    splatFrame: number
+  } {
+    return {
+      smoothedVelocity: this.smoothedVelocity,
+      smoothedAcceleration: this.smoothedAcceleration,
+      netForce: this.netForce,
+      forceIntensityLevels: this.forceIntensityLevels,
+      targetFrame: this.targetFrame,
+      currentDisplayFrame: this.currentDisplayFrame,
+      anchorState: this.anchorState,
+      splatFrame: this.splatFrame,
+    }
   }
 
   // Splat

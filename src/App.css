@@ -188,6 +188,82 @@
   height: 14px;
 }
 
+/* ── Physics HUD ─────────────────────────────────────────────────────────── */
+
+.hud {
+  position: fixed;
+  top: 42px;
+  left: 12px;
+  z-index: 1400;
+  background: #0f1117cc;
+  border: 1px solid #2a2d3a;
+  border-radius: 6px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  pointer-events: none;
+  backdrop-filter: blur(4px);
+}
+
+.hud-row,
+.hud-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hud-label {
+  font-size: 10px;
+  font-family: ui-monospace, Consolas, monospace;
+  color: #4a5068;
+  width: 54px;
+  flex-shrink: 0;
+}
+
+.hud-bar {
+  display: block;
+  width: 140px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 2px;
+}
+
+.hud-value {
+  font-size: 10px;
+  font-family: ui-monospace, Consolas, monospace;
+  color: #5c6480;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.hud-toggle {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 1401;
+  height: 22px;
+  padding: 0 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0f1117;
+  color: #7c8299;
+  border: 1px solid #2a2d3a;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 10px;
+  font-family: ui-monospace, Consolas, monospace;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: background 0.15s, color 0.15s;
+}
+
+.hud-toggle:hover {
+  background: #222840;
+  color: #a0a8c0;
+}
+
 /* ── Reset button ────────────────────────────────────────────────────────── */
 
 .reset-btn {
