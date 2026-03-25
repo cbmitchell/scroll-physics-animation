@@ -70,7 +70,7 @@ export interface ScrollPhysicsOptions {
   splatRecoverySpeed?: number
 }
 
-export type TunableOpts = Required<Omit<ScrollPhysicsOptions, 'getScrollPosition' | 'anchorLowerScrollPosition'>>
+export type TunableOpts = Required<Omit<ScrollPhysicsOptions, 'getScrollPosition' | 'anchorLowerScrollPosition' | 'imagePath' | 'numFrames'>>
 
 export interface FrameNames {
   upward: string[]
@@ -86,7 +86,7 @@ export interface FrameNames {
 
 const DEFAULT_GET_SCROLL_POSITION: ScrollPositionProvider = () => window.scrollY
 
-const DEFAULTS: Required<Omit<ScrollPhysicsOptions, 'getScrollPosition'>> = {
+export const TUNABLE_DEFAULTS: TunableOpts = {
   // Physics
   responsiveness: 0.3,
   mass: 1.0,
@@ -104,22 +104,24 @@ const DEFAULTS: Required<Omit<ScrollPhysicsOptions, 'getScrollPosition'>> = {
   thresholdBuffer: 0.2,
 
   // Frames
-  numFrames: 10,
   frameEasingSpeed: 0.15,
-
-  // Images
-  imagePath: '../../public/images/physics_animation_frames/',
 
   // Anchor system
   anchorEnabled: true,
   anchorUpperScrollPosition: 375,
-  anchorLowerScrollPosition: null,
   anchorVerticalOffset: 50,
 
   // Splat animation
   splatEnabled: true,
   splatSeverity: 0.002,
   splatRecoverySpeed: 0.2,
+}
+
+const DEFAULTS: Required<Omit<ScrollPhysicsOptions, 'getScrollPosition'>> = {
+  ...TUNABLE_DEFAULTS,
+  numFrames: 10,
+  imagePath: '../../public/images/physics_animation_frames/',
+  anchorLowerScrollPosition: null,
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

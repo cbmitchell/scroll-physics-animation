@@ -1,42 +1,21 @@
 import { useRef, useState } from 'react'
 import { ScrollPhysicsImage } from './components/ScrollPhysicsImage'
 import { ViewportWasher } from './components/ViewportWasher'
-import { Slider, IntSlider, Toggle, Section } from './components/Controls'
+import { Slider, Toggle, Section } from './components/Controls'
 import { PhysicsHUD } from './components/PhysicsHUD'
+import { TUNABLE_DEFAULTS } from './lib/ScrollPhysicsElement'
 import type { ScrollPhysicsElement, TunableOpts, ThresholdMode } from './lib/ScrollPhysicsElement'
 import './App.css'
 
 const PAGE_HEIGHT = 500 // dvh units
 const NUM_RINGS = 5
-
-const DEFAULTS: TunableOpts = {
-  responsiveness: 0.3,
-  mass: 1.0,
-  accelerationWeight: 1.0,
-  velocityWeight: 0.7,
-  velocitySmoothingFactor: 0.3,
-  accelerationSmoothingFactor: 0.3,
-  maxVelocity: 15000,
-  thresholdMode: 'linear',
-  baseForceThreshold: 1000,
-  forceThresholdMultiplier: 2.5,
-  maxForceValue: 10000,
-  thresholdBuffer: 0.2,
-  numFrames: 10,
-  frameEasingSpeed: 0.15,
-  imagePath: '/images/physics_animation_frames/',
-  anchorEnabled: true,
-  anchorUpperScrollPosition: 375,
-  anchorVerticalOffset: 50,
-  splatEnabled: true,
-  splatSeverity: 0.002,
-  splatRecoverySpeed: 0.2,
-}
+const PHYSICS_IMAGE_PATH = '/images/physics_animation_frames/'
+const PHYSICS_NUM_FRAMES = 10
 
 export default function App() {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const physicsInstanceRef = useRef<ScrollPhysicsElement | null>(null)
-  const [tunableOpts, setTunableOpts] = useState<TunableOpts>({ ...DEFAULTS })
+  const [tunableOpts, setTunableOpts] = useState<TunableOpts>({ ...TUNABLE_DEFAULTS })
   const [controlsOpen, setControlsOpen] = useState(true)
   const [hudOpen, setHudOpen] = useState(false)
 
@@ -67,6 +46,8 @@ export default function App() {
         <ScrollPhysicsImage
           scrollContainerRef={scrollContainerRef}
           instanceRef={physicsInstanceRef}
+          imagePath={PHYSICS_IMAGE_PATH}
+          numFrames={PHYSICS_NUM_FRAMES}
           {...tunableOpts}
         />
       </div>
@@ -104,7 +85,6 @@ export default function App() {
           </Section>
 
           <Section title="Frames">
-            <IntSlider label="numFrames" value={tunableOpts.numFrames} min={1} max={10} onChange={(v) => set('numFrames', v)} />
             <Slider label="easingSpeed" value={tunableOpts.frameEasingSpeed} min={0.01} max={1} onChange={(v) => set('frameEasingSpeed', v)} />
           </Section>
 
@@ -120,7 +100,7 @@ export default function App() {
             <Slider label="recoverySpeed" value={tunableOpts.splatRecoverySpeed} min={0.001} max={1} onChange={(v) => set('splatRecoverySpeed', v)} />
           </Section>
 
-          <button className="reset-btn" onClick={() => setTunableOpts({ ...DEFAULTS })}>
+          <button className="reset-btn" onClick={() => setTunableOpts({ ...TUNABLE_DEFAULTS })}>
             Reset to defaults
           </button>
         </div>
