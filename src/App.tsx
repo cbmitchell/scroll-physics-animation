@@ -98,6 +98,7 @@ type Opts = Required<Omit<ScrollPhysicsOptions, 'getScrollPosition' | 'anchorLow
 export default function App() {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [opts, setOpts] = useState<Opts>({ ...DEFAULTS })
+  const [controlsOpen, setControlsOpen] = useState(true)
 
   function set<K extends keyof Opts>(key: K, value: Opts[K]) {
     setOpts((prev) => ({ ...prev, [key]: value }))
@@ -130,7 +131,7 @@ export default function App() {
       </div>
 
       {/* ── Controls panel ── */}
-      <aside className="controls">
+      <aside className={`controls${controlsOpen ? '' : ' controls--closed'}`}>
         <div className="controls-inner">
           <h2 className="controls-title">Physics Controls</h2>
 
@@ -183,6 +184,14 @@ export default function App() {
           </button>
         </div>
       </aside>
+
+      <button
+        className="controls-toggle"
+        onClick={() => setControlsOpen((o) => !o)}
+        aria-label={controlsOpen ? 'Close controls' : 'Open controls'}
+      >
+        {controlsOpen ? '✕' : '☰'}
+      </button>
     </div>
   )
 }
