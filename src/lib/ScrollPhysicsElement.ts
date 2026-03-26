@@ -514,9 +514,10 @@ export class ScrollPhysicsElement {
     }
 
     if (dt >= DELTA_TIME_MIN && dt < DELTA_TIME_MAX) {
+      const dtRatio = dt / TARGET_DT
       this.updatePhysics(scrollTop, dt)
-      this.updateSplatDecay()
-      this.updateVisuals()
+      this.updateSplatDecay(dtRatio)
+      this.updateVisuals(dtRatio)
     }
 
     this.lastScrollTop = this.effectiveScrollTop(scrollTop)
@@ -555,9 +556,9 @@ export class ScrollPhysicsElement {
     this.acceleration = force / this.mass
   }
 
-  private updateSplatDecay(): void {
+  private updateSplatDecay(dtRatio: number): void {
     if (this.splatFrame > 0) {
-      this.splatFrame = Math.max(0, this.splatFrame - this.splatRecoverySpeed)
+      this.splatFrame = Math.max(0, this.splatFrame - this.splatRecoverySpeed * dtRatio)
       if (this.splatFrame < 0.1) this.splatFrame = 0
     }
   }
@@ -566,7 +567,7 @@ export class ScrollPhysicsElement {
   // VISUAL / FRAME SELECTION
   // ═══════════════════════════════════════════════════════════════════════════
 
-  private updateVisuals(): void {
+  private updateVisuals(dtRatio: number): void {
     // Net force
     this.netForce =
       this.acceleration * this.accelerationWeight +
@@ -582,9 +583,10 @@ export class ScrollPhysicsElement {
     }
     this.lastTargetFrame = this.targetFrame
 
-    // Ease toward target
+    // Ease toward target (frame-rate independent: same perceived speed at any refresh rate)
+    const easingAlpha = 1 - Math.pow(1 - this.frameEasingSpeed, dtRatio)
     this.currentDisplayFrame +=
-      (this.targetFrame - this.currentDisplayFrame) * this.frameEasingSpeed
+      (this.targetFrame - this.currentDisplayFrame) * easingAlpha
 
     // Pick the image
     this.updateImage()
