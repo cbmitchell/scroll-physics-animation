@@ -4,7 +4,10 @@ import type { TunableOpts, ThresholdMode } from '../lib/ScrollPhysicsElement'
 
 interface ControlsPanelProps {
   tunableOpts: TunableOpts
-  onTunableChange: <K extends keyof TunableOpts>(key: K, value: TunableOpts[K]) => void
+  onTunableChange: <K extends keyof TunableOpts>(
+    key: K,
+    value: TunableOpts[K],
+  ) => void
   washersVisible: boolean
   onWashersVisibleChange: (v: boolean) => void
   washerFocalLength: number
@@ -52,14 +55,14 @@ export function ControlsPanel({
               label="accelerationWeight"
               value={tunableOpts.accelerationWeight}
               min={0}
-              max={5}
+              max={2}
               onChange={(v) => onTunableChange('accelerationWeight', v)}
             />
             <Slider
               label="velocityWeight"
               value={tunableOpts.velocityWeight}
               min={0}
-              max={5}
+              max={2}
               onChange={(v) => onTunableChange('velocityWeight', v)}
             />
             <Slider
@@ -74,7 +77,9 @@ export function ControlsPanel({
               value={tunableOpts.accelerationSmoothingFactor}
               min={0.01}
               max={1}
-              onChange={(v) => onTunableChange('accelerationSmoothingFactor', v)}
+              onChange={(v) =>
+                onTunableChange('accelerationSmoothingFactor', v)
+              }
             />
             <Slider
               label="maxVelocity"
@@ -92,7 +97,10 @@ export function ControlsPanel({
               <select
                 value={tunableOpts.thresholdMode}
                 onChange={(e) =>
-                  onTunableChange('thresholdMode', e.target.value as ThresholdMode)
+                  onTunableChange(
+                    'thresholdMode',
+                    e.target.value as ThresholdMode,
+                  )
                 }
               >
                 <option value="linear">linear</option>
@@ -136,7 +144,7 @@ export function ControlsPanel({
               label="easingSpeed"
               value={tunableOpts.frameEasingSpeed}
               min={0.01}
-              max={1}
+              max={0.3}
               onChange={(v) => onTunableChange('frameEasingSpeed', v)}
             />
           </Section>
@@ -195,10 +203,7 @@ export function ControlsPanel({
             />
           </Section>
 
-          <button
-            className="reset-btn"
-            onClick={onReset}
-          >
+          <button className="reset-btn" onClick={onReset}>
             Reset to defaults
           </button>
         </div>

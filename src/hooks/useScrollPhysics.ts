@@ -39,8 +39,8 @@ export function useScrollPhysics(
     if (!p) return;
 
     // Physics
-    if (options.responsiveness != null)              p.setResponsiveness(options.responsiveness);
-    if (options.mass != null)                        p.setMass(options.mass);
+    if (options.responsiveness != null)               p.setResponsiveness(options.responsiveness);
+    if (options.mass != null)                         p.setMass(options.mass);
     if (options.accelerationWeight != null)           p.setAccelerationWeight(options.accelerationWeight);
     if (options.velocityWeight != null)               p.setVelocityWeight(options.velocityWeight);
     if (options.velocitySmoothingFactor != null)      p.setVelocitySmoothingFactor(options.velocitySmoothingFactor);
@@ -48,7 +48,7 @@ export function useScrollPhysics(
     if (options.maxVelocity != null)                  p.setMaxVelocity(options.maxVelocity);
 
     // Thresholds
-    if (options.thresholdMode != null)               p.setThresholdMode(options.thresholdMode);
+    if (options.thresholdMode != null)                p.setThresholdMode(options.thresholdMode);
     if (options.baseForceThreshold != null)           p.setBaseForceThreshold(options.baseForceThreshold);
     if (options.forceThresholdMultiplier != null)     p.setForceThresholdMultiplier(options.forceThresholdMultiplier);
     if (options.maxForceValue != null)                p.setMaxForceValue(options.maxForceValue);
@@ -58,7 +58,7 @@ export function useScrollPhysics(
     if (options.frameEasingSpeed != null)             p.setFrameEasingSpeed(options.frameEasingSpeed);
 
     // Anchor
-    if (options.anchorEnabled != null)                   p.setAnchorEnabled(options.anchorEnabled);
+    if (options.anchorEnabled != null)                    p.setAnchorEnabled(options.anchorEnabled);
     if (options.anchorUpperScrollPosition !== undefined)  p.setAnchorUpperScrollPosition(options.anchorUpperScrollPosition);
     if (options.anchorLowerScrollPosition !== undefined)  p.setAnchorLowerScrollPosition(options.anchorLowerScrollPosition);
     if (options.viewportVerticalPosition != null)         p.setViewportVerticalPosition(options.viewportVerticalPosition);
@@ -66,8 +66,8 @@ export function useScrollPhysics(
     if (options.lowerAnchorVisualOffset != null)          p.setLowerAnchorVisualOffset(options.lowerAnchorVisualOffset);
 
     // Splat
-    if (options.splatEnabled != null)                 p.setSplatEnabled(options.splatEnabled);
-    if (options.splatSeverity != null)                p.setSplatSeverity(options.splatSeverity);
+    if (options.splatEnabled != null)                  p.setSplatEnabled(options.splatEnabled);
+    if (options.splatSeverity != null)                 p.setSplatSeverity(options.splatSeverity);
     if (options.splatRecoverySpeed != null)            p.setSplatRecoverySpeed(options.splatRecoverySpeed);
 
     // Scroll position source

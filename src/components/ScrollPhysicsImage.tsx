@@ -1,19 +1,7 @@
-import { useRef, useMemo, useEffect, useState, type CSSProperties, type MutableRefObject, type RefObject } from 'react';
+import { useRef, useMemo, useEffect, type CSSProperties, type MutableRefObject, type RefObject } from 'react';
 import { useScrollPhysics } from '../hooks/useScrollPhysics';
+import { useIsMobile } from '../hooks/useIsMobile';
 import type { ScrollPhysicsElement, ScrollPhysicsOptions } from '../lib/ScrollPhysicsElement';
-
-function useIsMobile(breakpoint = 900): boolean {
-  const [isMobile, setIsMobile] = useState(
-    () => window.matchMedia(`(max-width: ${breakpoint}px)`).matches,
-  );
-  useEffect(() => {
-    const mq = window.matchMedia(`(max-width: ${breakpoint}px)`);
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
-  }, [breakpoint]);
-  return isMobile;
-}
 
 export interface ScrollPhysicsImageProps extends ScrollPhysicsOptions {
   /** Pixel width/height of the <img> (default 512). */

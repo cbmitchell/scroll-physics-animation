@@ -3,7 +3,7 @@ import { ScrollPhysicsImage } from './components/ScrollPhysicsImage'
 import { ViewportWasher } from './components/ViewportWasher'
 import { ControlsPanel, DEFAULT_FOCAL_LENGTH } from './components/ControlsPanel'
 import { PhysicsHUD } from './components/PhysicsHUD'
-import { TUNABLE_DEFAULTS } from './lib/ScrollPhysicsElement'
+import { TUNABLE_DEFAULTS, MOBILE_TUNABLE_OVERRIDES, isTouchPrimary } from './lib/ScrollPhysicsElement'
 import type { ScrollPhysicsElement, TunableOpts } from './lib/ScrollPhysicsElement'
 import './App.css'
 
@@ -15,9 +15,10 @@ const PHYSICS_NUM_FRAMES = 10
 export default function App() {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const physicsInstanceRef = useRef<ScrollPhysicsElement | null>(null)
-  const [tunableOpts, setTunableOpts] = useState<TunableOpts>({
-    ...TUNABLE_DEFAULTS,
-  })
+  const effectiveDefaults: TunableOpts = isTouchPrimary()
+    ? { ...TUNABLE_DEFAULTS, ...MOBILE_TUNABLE_OVERRIDES }
+    : TUNABLE_DEFAULTS
+  const [tunableOpts, setTunableOpts] = useState<TunableOpts>(effectiveDefaults)
   const [hudOpen, setHudOpen] = useState(false)
   const [washersVisible, setWashersVisible] = useState(true)
   const [stripesVisible, setStripesVisible] = useState(true)
@@ -29,7 +30,7 @@ export default function App() {
   }
 
   function handleReset() {
-    setTunableOpts({ ...TUNABLE_DEFAULTS })
+    setTunableOpts(effectiveDefaults)
     setWashersVisible(true)
     setWasherFocalLength(DEFAULT_FOCAL_LENGTH)
     setStripesVisible(true)

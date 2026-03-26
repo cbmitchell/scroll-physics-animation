@@ -140,6 +140,18 @@ export const TUNABLE_DEFAULTS: TunableOpts = {
   splatRecoverySpeed: 0.2,
 }
 
+export function isTouchPrimary(): boolean {
+  return window.matchMedia('(pointer: coarse)').matches
+}
+
+// TODO: fill in the values you want to differ on mobile
+export const MOBILE_TUNABLE_OVERRIDES: Partial<TunableOpts> = {
+  responsiveness: 0.45,
+  accelerationWeight: 1.0,
+  velocityWeight: 1.0,
+  splatSeverity: 0.003,
+}
+
 const DEFAULTS: Required<Omit<ScrollPhysicsOptions, 'getScrollPosition'>> = {
   ...TUNABLE_DEFAULTS,
   numFrames: 10,
