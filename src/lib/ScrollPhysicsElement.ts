@@ -495,6 +495,10 @@ export class ScrollPhysicsElement {
     } else {
       this.setContainerStyle('fixed', this.viewportVerticalPosition + '%')
       this.splatFrame = 0
+      // Reset lastScrollTop to the actual scroll position so the first physics
+      // frame after unanchoring computes a distance of zero rather than the full
+      // gap accumulated while lastScrollTop was pinned to the anchor position.
+      this.lastScrollTop = scrollTop
     }
 
     this.anchorState = newState
