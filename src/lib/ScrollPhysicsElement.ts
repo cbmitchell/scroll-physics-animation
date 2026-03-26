@@ -699,6 +699,7 @@ export class ScrollPhysicsElement {
     this.numFrames = n
     this.frames = this.generateFrameNames(n)
     this.forceIntensityLevels = this.generateForceThresholds()
+    this.preloadFrames()
   }
   setFrameEasingSpeed(v: number): void {
     this.frameEasingSpeed = Math.max(0, Math.min(1, v))
