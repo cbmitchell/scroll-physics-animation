@@ -65,13 +65,14 @@ export function ScrollPhysicsImage({
   const physicsRef = useScrollPhysics(imgRef, mergedOptions);
 
   // Expose the instance to the parent if they passed a ref.
-  // Must be useEffect (not useLayoutEffect) so it runs after the physics-creation
-  // useEffect in useScrollPhysics, which is registered first and therefore runs first.
+  // Depends on imagePath/numFrames (not physicsRef, whose identity is stable) so this
+  // re-runs whenever useScrollPhysics recreates the instance, keeping externalRef current.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (externalRef) {
       externalRef.current = physicsRef.current;
     }
-  }, [externalRef, physicsRef]);
+  }, [externalRef, mergedOptions.imagePath, mergedOptions.numFrames]);
 
   return (
     <div
