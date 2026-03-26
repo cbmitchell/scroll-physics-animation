@@ -2,8 +2,6 @@ import { useState } from 'react'
 import { Slider, Toggle, Section } from './Controls'
 import type { TunableOpts, ThresholdMode } from '../lib/ScrollPhysicsElement'
 
-const DEFAULT_FOCAL_LENGTH = 700
-
 interface ControlsPanelProps {
   tunableOpts: TunableOpts
   onTunableChange: <K extends keyof TunableOpts>(key: K, value: TunableOpts[K]) => void
@@ -217,4 +215,4 @@ export function ControlsPanel({
   )
 }
 
-export { DEFAULT_FOCAL_LENGTH }
+export { DEFAULT_FOCAL_LENGTH } from './ViewportWasher'

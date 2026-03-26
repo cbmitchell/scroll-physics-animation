@@ -10,7 +10,7 @@ const DEPTH = 30
 const SEGMENTS = 24
 
 // Default simulated focal length for the perspective projection. Higher = less distortion.
-const DEFAULT_FOCAL_LENGTH = 700
+export const DEFAULT_FOCAL_LENGTH = 700
 
 // Face colours: top and bottom annular rings each have their own colour;
 // outer and inner cylindrical walls each have their own.
