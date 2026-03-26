@@ -45,14 +45,14 @@ export function ControlsPanel({
               label="responsiveness"
               value={tunableOpts.responsiveness}
               min={0.01}
-              max={2}
+              max={1}
               onChange={(v) => onTunableChange('responsiveness', v)}
             />
             <Slider
               label="mass"
               value={tunableOpts.mass}
               min={0.1}
-              max={5}
+              max={2}
               onChange={(v) => onTunableChange('mass', v)}
             />
             <Slider
@@ -89,7 +89,7 @@ export function ControlsPanel({
               label="maxVelocity"
               value={tunableOpts.maxVelocity}
               min={1000}
-              max={50000}
+              max={20000}
               step={100}
               onChange={(v) => onTunableChange('maxVelocity', v)}
             />

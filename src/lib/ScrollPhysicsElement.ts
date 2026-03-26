@@ -132,10 +132,14 @@ export function isTouchPrimary(): boolean {
 
 // Default settings for mobile to override the default desktop settings
 export const MOBILE_TUNABLE_OVERRIDES: Partial<TunableOpts> = {
-  responsiveness: 0.45,
+  responsiveness: 0.17,
+  mass: 0.3,
   accelerationWeight: 1.0,
   velocityWeight: 1.0,
-  splatSeverity: 0.5,
+  accelerationSmoothingFactor: 0.18,
+  velocitySmoothingFactor: 0.18,
+  thresholdBuffer: 0.4,
+  splatSeverity: 0.7,
 }
 
 const DEFAULTS: Required<Omit<ScrollPhysicsOptions, 'getScrollPosition'>> = {
