@@ -3,6 +3,7 @@ import { ScrollPhysicsImage } from './components/ScrollPhysicsImage'
 import { ViewportWasher } from './components/ViewportWasher'
 import { ControlsPanel, DEFAULT_FOCAL_LENGTH } from './components/ControlsPanel'
 import { PhysicsHUD } from './components/PhysicsHUD'
+import { AnchorIndicators } from './components/AnchorIndicators'
 import { TUNABLE_DEFAULTS, MOBILE_TUNABLE_OVERRIDES, isTouchPrimary } from './lib/ScrollPhysicsElement'
 import type { ScrollPhysicsElement, TunableOpts } from './lib/ScrollPhysicsElement'
 import './App.css'
@@ -22,6 +23,7 @@ export default function App() {
   const [hudOpen, setHudOpen] = useState(false)
   const [washersVisible, setWashersVisible] = useState(true)
   const [stripesVisible, setStripesVisible] = useState(true)
+  const [anchorIndicatorsVisible, setAnchorIndicatorsVisible] = useState(false)
   const [washerFocalLength, setWasherFocalLength] =
     useState(DEFAULT_FOCAL_LENGTH)
 
@@ -34,6 +36,7 @@ export default function App() {
     setWashersVisible(true)
     setWasherFocalLength(DEFAULT_FOCAL_LENGTH)
     setStripesVisible(true)
+    setAnchorIndicatorsVisible(false)
   }
 
   return (
@@ -58,6 +61,11 @@ export default function App() {
             ))}
         </div>
 
+        <AnchorIndicators
+          visible={anchorIndicatorsVisible}
+          scrollContainerRef={scrollContainerRef}
+        />
+
         <ScrollPhysicsImage
           scrollContainerRef={scrollContainerRef}
           instanceRef={physicsInstanceRef}
@@ -71,6 +79,8 @@ export default function App() {
       <ControlsPanel
         tunableOpts={tunableOpts}
         onTunableChange={set}
+        anchorIndicatorsVisible={anchorIndicatorsVisible}
+        onAnchorIndicatorsVisibleChange={setAnchorIndicatorsVisible}
         washersVisible={washersVisible}
         onWashersVisibleChange={setWashersVisible}
         washerFocalLength={washerFocalLength}

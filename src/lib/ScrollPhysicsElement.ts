@@ -144,7 +144,7 @@ export function isTouchPrimary(): boolean {
   return window.matchMedia('(pointer: coarse)').matches
 }
 
-// TODO: fill in the values you want to differ on mobile
+// Default settings for mobile to override the default desktop settings
 export const MOBILE_TUNABLE_OVERRIDES: Partial<TunableOpts> = {
   responsiveness: 0.45,
   accelerationWeight: 1.0,
@@ -574,7 +574,10 @@ export class ScrollPhysicsElement {
 
   private updateSplatDecay(dtRatio: number): void {
     if (this.splatFrame > 0) {
-      this.splatFrame = Math.max(0, this.splatFrame - this.splatRecoverySpeed * dtRatio)
+      this.splatFrame = Math.max(
+        0,
+        this.splatFrame - this.splatRecoverySpeed * dtRatio,
+      )
       if (this.splatFrame < 0.1) this.splatFrame = 0
     }
   }

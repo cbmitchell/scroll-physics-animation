@@ -8,6 +8,8 @@ interface ControlsPanelProps {
     key: K,
     value: TunableOpts[K],
   ) => void
+  anchorIndicatorsVisible: boolean
+  onAnchorIndicatorsVisibleChange: (v: boolean) => void
   washersVisible: boolean
   onWashersVisibleChange: (v: boolean) => void
   washerFocalLength: number
@@ -20,6 +22,8 @@ interface ControlsPanelProps {
 export function ControlsPanel({
   tunableOpts,
   onTunableChange,
+  anchorIndicatorsVisible,
+  onAnchorIndicatorsVisibleChange,
   washersVisible,
   onWashersVisibleChange,
   washerFocalLength,
@@ -154,6 +158,11 @@ export function ControlsPanel({
               label="enabled"
               value={tunableOpts.anchorEnabled}
               onChange={(v) => onTunableChange('anchorEnabled', v)}
+            />
+            <Toggle
+              label="showIndicators"
+              value={anchorIndicatorsVisible}
+              onChange={onAnchorIndicatorsVisibleChange}
             />
           </Section>
 
