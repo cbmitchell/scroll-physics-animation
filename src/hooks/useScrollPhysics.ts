@@ -31,7 +31,7 @@ export function useScrollPhysics(
     // Recreate only when the image source folder or frame count changes,
     // since those require rebuilding internal frame-name arrays.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imgRef, options.imagePath, options.numFrames]);
+  }, [imgRef, options.frameSet?.imagePath, options.frameSet?.numFrames]);
 
   // ── Sync all tunable parameters without recreating the instance ────────
   useEffect(() => {
@@ -58,12 +58,12 @@ export function useScrollPhysics(
     if (options.frameEasingSpeed != null)             p.setFrameEasingSpeed(options.frameEasingSpeed);
 
     // Anchor
-    if (options.anchorEnabled != null)                    p.setAnchorEnabled(options.anchorEnabled);
-    if (options.anchorUpperScrollPosition !== undefined)  p.setAnchorUpperScrollPosition(options.anchorUpperScrollPosition);
-    if (options.anchorLowerScrollPosition !== undefined)  p.setAnchorLowerScrollPosition(options.anchorLowerScrollPosition);
-    if (options.viewportVerticalPosition != null)         p.setViewportVerticalPosition(options.viewportVerticalPosition);
-    if (options.upperAnchorVisualOffset != null)          p.setUpperAnchorVisualOffset(options.upperAnchorVisualOffset);
-    if (options.lowerAnchorVisualOffset != null)          p.setLowerAnchorVisualOffset(options.lowerAnchorVisualOffset);
+    if (options.anchorEnabled != null)                              p.setAnchorEnabled(options.anchorEnabled);
+    if (options.anchorUpperScrollPosition !== undefined)            p.setAnchorUpperScrollPosition(options.anchorUpperScrollPosition);
+    if (options.anchorLowerScrollPosition !== undefined)            p.setAnchorLowerScrollPosition(options.anchorLowerScrollPosition);
+    if (options.viewportVerticalPosition != null)                   p.setViewportVerticalPosition(options.viewportVerticalPosition);
+    if (options.frameSet?.upperAnchorVisualOffset != null)          p.setUpperAnchorVisualOffset(options.frameSet.upperAnchorVisualOffset);
+    if (options.frameSet?.lowerAnchorVisualOffset != null)          p.setLowerAnchorVisualOffset(options.frameSet.lowerAnchorVisualOffset);
 
     // Splat
     if (options.splatEnabled != null)                  p.setSplatEnabled(options.splatEnabled);
@@ -90,8 +90,8 @@ export function useScrollPhysics(
     options.anchorUpperScrollPosition,
     options.anchorLowerScrollPosition,
     options.viewportVerticalPosition,
-    options.upperAnchorVisualOffset,
-    options.lowerAnchorVisualOffset,
+    options.frameSet?.upperAnchorVisualOffset,
+    options.frameSet?.lowerAnchorVisualOffset,
     options.splatEnabled,
     options.splatSeverity,
     options.splatRecoverySpeed,

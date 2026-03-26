@@ -62,7 +62,7 @@ export function ScrollPhysicsImage({
     if (externalRef) {
       externalRef.current = physicsRef.current;
     }
-  }, [externalRef, mergedOptions.imagePath, mergedOptions.numFrames]);
+  }, [externalRef, mergedOptions.frameSet?.imagePath, mergedOptions.frameSet?.numFrames]);
 
   return (
     <div

@@ -6,12 +6,11 @@ import { PhysicsHUD } from './components/PhysicsHUD'
 import { AnchorIndicators } from './components/AnchorIndicators'
 import { TUNABLE_DEFAULTS, MOBILE_TUNABLE_OVERRIDES, isTouchPrimary } from './lib/ScrollPhysicsElement'
 import type { ScrollPhysicsElement, TunableOpts } from './lib/ScrollPhysicsElement'
+import { FRAME_SETS } from './lib/frameSets'
 import './App.css'
 
 const PAGE_HEIGHT = 500 // dvh units
 const NUM_RINGS = 5
-const PHYSICS_IMAGE_PATH = '/images/physics_animation_frames/'
-const PHYSICS_NUM_FRAMES = 10
 
 export default function App() {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -64,13 +63,14 @@ export default function App() {
         <AnchorIndicators
           visible={anchorIndicatorsVisible}
           scrollContainerRef={scrollContainerRef}
+          upperAnchorVisualOffset={FRAME_SETS.default.upperAnchorVisualOffset}
+          lowerAnchorVisualOffset={FRAME_SETS.default.lowerAnchorVisualOffset}
         />
 
         <ScrollPhysicsImage
           scrollContainerRef={scrollContainerRef}
           instanceRef={physicsInstanceRef}
-          imagePath={PHYSICS_IMAGE_PATH}
-          numFrames={PHYSICS_NUM_FRAMES}
+          frameSet={FRAME_SETS.default}
           {...tunableOpts}
         />
       </div>

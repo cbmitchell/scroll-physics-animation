@@ -176,14 +176,14 @@ export function ControlsPanel({
               label="severity"
               value={tunableOpts.splatSeverity}
               min={0}
-              max={0.02}
+              max={1.0}
               onChange={(v) => onTunableChange('splatSeverity', v)}
             />
             <Slider
               label="recoverySpeed"
               value={tunableOpts.splatRecoverySpeed}
               min={0.001}
-              max={1}
+              max={0.5}
               onChange={(v) => onTunableChange('splatRecoverySpeed', v)}
             />
           </Section>
@@ -198,7 +198,7 @@ export function ControlsPanel({
               label="focalLength"
               value={washerFocalLength}
               min={400}
-              max={2000}
+              max={1400}
               step={10}
               onChange={onWasherFocalLengthChange}
             />

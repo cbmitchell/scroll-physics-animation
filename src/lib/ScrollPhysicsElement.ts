@@ -1,3 +1,7 @@
+import { FRAME_SETS, type FrameSetConfig } from './frameSets'
+
+export type { FrameSetConfig } from './frameSets'
+
 /**
  * ScrollPhysicsElement
  *
@@ -51,12 +55,9 @@ export interface ScrollPhysicsOptions {
   maxForceValue?: number
   thresholdBuffer?: number
 
-  // Frames
-  numFrames?: number
+  // Frames + image asset metadata
+  frameSet?: FrameSetConfig
   frameEasingSpeed?: number
-
-  // Images
-  imagePath?: string
 
   // Anchor system
   anchorEnabled?: boolean
@@ -64,18 +65,6 @@ export interface ScrollPhysicsOptions {
   anchorLowerScrollPosition?: number | null
   /** Vertical position of the element on screen while following, as a % of viewport height (default 50). */
   viewportVerticalPosition?: number
-  /**
-   * Visual offset in pixels applied to the upper anchor indicator.
-   * Nudges the rendered anchor line up so it aligns with the splat frame's contact point.
-   * Frame-set metadata — scale proportionally with the displayed image size.
-   */
-  upperAnchorVisualOffset?: number
-  /**
-   * Visual offset in pixels applied to the lower anchor indicator.
-   * Nudges the rendered anchor line down so it aligns with the splat frame's contact point.
-   * Frame-set metadata — scale proportionally with the displayed image size.
-   */
-  lowerAnchorVisualOffset?: number
 
   // Splat animation
   splatEnabled?: boolean
@@ -89,11 +78,8 @@ export type TunableOpts = Required<
     | 'getScrollPosition'
     | 'anchorUpperScrollPosition'
     | 'anchorLowerScrollPosition'
-    | 'imagePath'
-    | 'numFrames'
+    | 'frameSet'
     | 'viewportVerticalPosition'
-    | 'upperAnchorVisualOffset'
-    | 'lowerAnchorVisualOffset'
   >
 >
 
@@ -136,7 +122,7 @@ export const TUNABLE_DEFAULTS: TunableOpts = {
 
   // Splat animation
   splatEnabled: true,
-  splatSeverity: 0.001,
+  splatSeverity: 0.33,
   splatRecoverySpeed: 0.2,
 }
 
@@ -149,18 +135,15 @@ export const MOBILE_TUNABLE_OVERRIDES: Partial<TunableOpts> = {
   responsiveness: 0.45,
   accelerationWeight: 1.0,
   velocityWeight: 1.0,
-  splatSeverity: 0.003,
+  splatSeverity: 1.0,
 }
 
 const DEFAULTS: Required<Omit<ScrollPhysicsOptions, 'getScrollPosition'>> = {
   ...TUNABLE_DEFAULTS,
-  numFrames: 10,
-  imagePath: '/images/physics_animation_frames/',
+  frameSet: FRAME_SETS.default,
   anchorUpperScrollPosition: null,
   anchorLowerScrollPosition: null,
   viewportVerticalPosition: 50,
-  upperAnchorVisualOffset: 0,
-  lowerAnchorVisualOffset: 0,
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -282,7 +265,7 @@ export class ScrollPhysicsElement {
     this.forceIntensityLevels = []
 
     // Frame animation
-    this.numFrames = cfg.numFrames
+    this.numFrames = cfg.frameSet.numFrames
     this.frameEasingSpeed = cfg.frameEasingSpeed
     this.targetFrame = 0
     this.currentDisplayFrame = 0
@@ -290,7 +273,7 @@ export class ScrollPhysicsElement {
     this.currentFramePath = ''
 
     // Images
-    this.imagePath = cfg.imagePath
+    this.imagePath = cfg.frameSet.imagePath
     this.frames = this.generateFrameNames(this.numFrames)
 
     // Anchor system
@@ -298,13 +281,13 @@ export class ScrollPhysicsElement {
     this.anchorUpperScrollPosition = cfg.anchorUpperScrollPosition
     this.anchorLowerScrollPosition = cfg.anchorLowerScrollPosition
     this.viewportVerticalPosition = cfg.viewportVerticalPosition
-    this.upperAnchorVisualOffset = cfg.upperAnchorVisualOffset
-    this.lowerAnchorVisualOffset = cfg.lowerAnchorVisualOffset
+    this.upperAnchorVisualOffset = cfg.frameSet.upperAnchorVisualOffset ?? 0
+    this.lowerAnchorVisualOffset = cfg.frameSet.lowerAnchorVisualOffset ?? 0
     this.anchorState = 'none'
 
     // Splat animation
     this.splatEnabled = cfg.splatEnabled
-    this.splatSeverity = cfg.splatSeverity
+    this.splatSeverity = cfg.splatSeverity * 0.003
     this.splatRecoverySpeed = cfg.splatRecoverySpeed
     this.splatFrame = 0
 
@@ -821,7 +804,7 @@ export class ScrollPhysicsElement {
     if (!v) this.splatFrame = 0
   }
   setSplatSeverity(v: number): void {
-    this.splatSeverity = Math.max(0, v)
+    this.splatSeverity = Math.max(0, v) * 0.003
   }
   setSplatRecoverySpeed(v: number): void {
     this.splatRecoverySpeed = Math.max(0.001, v)
