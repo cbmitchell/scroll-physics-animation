@@ -149,14 +149,6 @@ export function ControlsPanel({
               value={tunableOpts.anchorEnabled}
               onChange={(v) => onTunableChange('anchorEnabled', v)}
             />
-            <Slider
-              label="verticalOffset"
-              value={tunableOpts.anchorVerticalOffset}
-              min={0}
-              max={100}
-              step={1}
-              onChange={(v) => onTunableChange('anchorVerticalOffset', v)}
-            />
           </Section>
 
           <Section title="Splat">

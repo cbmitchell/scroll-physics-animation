@@ -58,10 +58,12 @@ export function useScrollPhysics(
     if (options.frameEasingSpeed != null)             p.setFrameEasingSpeed(options.frameEasingSpeed);
 
     // Anchor
-    if (options.anchorEnabled != null)                p.setAnchorEnabled(options.anchorEnabled);
-    if (options.anchorUpperScrollPosition !== undefined) p.setAnchorUpperScrollPosition(options.anchorUpperScrollPosition);
-    if (options.anchorLowerScrollPosition != null)     p.setAnchorLowerScrollPosition(options.anchorLowerScrollPosition);
-    if (options.anchorVerticalOffset != null)          p.setAnchorVerticalOffset(options.anchorVerticalOffset);
+    if (options.anchorEnabled != null)                   p.setAnchorEnabled(options.anchorEnabled);
+    if (options.anchorUpperScrollPosition !== undefined)  p.setAnchorUpperScrollPosition(options.anchorUpperScrollPosition);
+    if (options.anchorLowerScrollPosition != null)        p.setAnchorLowerScrollPosition(options.anchorLowerScrollPosition);
+    if (options.viewportVerticalPosition != null)         p.setViewportVerticalPosition(options.viewportVerticalPosition);
+    if (options.upperAnchorVisualOffset != null)          p.setUpperAnchorVisualOffset(options.upperAnchorVisualOffset);
+    if (options.lowerAnchorVisualOffset != null)          p.setLowerAnchorVisualOffset(options.lowerAnchorVisualOffset);
 
     // Splat
     if (options.splatEnabled != null)                 p.setSplatEnabled(options.splatEnabled);
@@ -87,7 +89,9 @@ export function useScrollPhysics(
     options.anchorEnabled,
     options.anchorUpperScrollPosition,
     options.anchorLowerScrollPosition,
-    options.anchorVerticalOffset,
+    options.viewportVerticalPosition,
+    options.upperAnchorVisualOffset,
+    options.lowerAnchorVisualOffset,
     options.splatEnabled,
     options.splatSeverity,
     options.splatRecoverySpeed,

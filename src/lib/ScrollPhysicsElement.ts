@@ -62,7 +62,20 @@ export interface ScrollPhysicsOptions {
   anchorEnabled?: boolean
   anchorUpperScrollPosition?: number | null
   anchorLowerScrollPosition?: number | null
-  anchorVerticalOffset?: number
+  /** Vertical position of the element on screen while following, as a % of viewport height (default 50). */
+  viewportVerticalPosition?: number
+  /**
+   * Visual offset in pixels applied to the upper anchor indicator.
+   * Nudges the rendered anchor line up so it aligns with the splat frame's contact point.
+   * Frame-set metadata — scale proportionally with the displayed image size.
+   */
+  upperAnchorVisualOffset?: number
+  /**
+   * Visual offset in pixels applied to the lower anchor indicator.
+   * Nudges the rendered anchor line down so it aligns with the splat frame's contact point.
+   * Frame-set metadata — scale proportionally with the displayed image size.
+   */
+  lowerAnchorVisualOffset?: number
 
   // Splat animation
   splatEnabled?: boolean
@@ -78,6 +91,9 @@ export type TunableOpts = Required<
     | 'anchorLowerScrollPosition'
     | 'imagePath'
     | 'numFrames'
+    | 'viewportVerticalPosition'
+    | 'upperAnchorVisualOffset'
+    | 'lowerAnchorVisualOffset'
   >
 >
 
@@ -117,7 +133,6 @@ export const TUNABLE_DEFAULTS: TunableOpts = {
 
   // Anchor system
   anchorEnabled: true,
-  anchorVerticalOffset: 50,
 
   // Splat animation
   splatEnabled: true,
@@ -131,6 +146,9 @@ const DEFAULTS: Required<Omit<ScrollPhysicsOptions, 'getScrollPosition'>> = {
   imagePath: '../../public/images/physics_animation_frames/',
   anchorUpperScrollPosition: null,
   anchorLowerScrollPosition: null,
+  viewportVerticalPosition: 50,
+  upperAnchorVisualOffset: 0,
+  lowerAnchorVisualOffset: 0,
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -191,7 +209,9 @@ export class ScrollPhysicsElement {
   private anchorEnabled: boolean
   private anchorUpperScrollPosition: number | null
   private anchorLowerScrollPosition: number | null
-  private anchorVerticalOffset: number
+  private viewportVerticalPosition: number
+  private upperAnchorVisualOffset: number
+  private lowerAnchorVisualOffset: number
   private anchorState: AnchorState
 
   // Splat animation
@@ -265,7 +285,9 @@ export class ScrollPhysicsElement {
     this.anchorEnabled = cfg.anchorEnabled
     this.anchorUpperScrollPosition = cfg.anchorUpperScrollPosition
     this.anchorLowerScrollPosition = cfg.anchorLowerScrollPosition
-    this.anchorVerticalOffset = cfg.anchorVerticalOffset
+    this.viewportVerticalPosition = cfg.viewportVerticalPosition
+    this.upperAnchorVisualOffset = cfg.upperAnchorVisualOffset
+    this.lowerAnchorVisualOffset = cfg.lowerAnchorVisualOffset
     this.anchorState = 'none'
 
     // Splat animation
@@ -375,7 +397,7 @@ export class ScrollPhysicsElement {
   // ═══════════════════════════════════════════════════════════════════════════
 
   private anchorVerticalPx(): number {
-    return (this.anchorVerticalOffset / 100) * window.innerHeight
+    return (this.viewportVerticalPosition / 100) * window.innerHeight
   }
 
   /**
@@ -471,7 +493,7 @@ export class ScrollPhysicsElement {
         )
       }
     } else {
-      this.setContainerStyle('fixed', this.anchorVerticalOffset + '%')
+      this.setContainerStyle('fixed', this.viewportVerticalPosition + '%')
       this.splatFrame = 0
     }
 
@@ -695,11 +717,11 @@ export class ScrollPhysicsElement {
   setAnchorEnabled(v: boolean): void {
     this.anchorEnabled = v
     if (!v && this.isAnchored()) {
-      this.setContainerStyle('fixed', '50%')
+      this.setContainerStyle('fixed', this.viewportVerticalPosition + '%')
       this.anchorState = 'none'
       this.splatFrame = 0
     } else if (v && this.container) {
-      this.container.style.top = this.anchorVerticalOffset + '%'
+      this.container.style.top = this.viewportVerticalPosition + '%'
     }
   }
   /** Pass null to restore the dynamic default. */
@@ -726,11 +748,17 @@ export class ScrollPhysicsElement {
       this.anchorLowerScrollPosition = upper + 100
     }
   }
-  setAnchorVerticalOffset(v: number): void {
-    this.anchorVerticalOffset = Math.max(0, Math.min(100, v))
+  setViewportVerticalPosition(v: number): void {
+    this.viewportVerticalPosition = Math.max(0, Math.min(100, v))
     if (this.anchorEnabled && !this.isAnchored() && this.container) {
-      this.container.style.top = this.anchorVerticalOffset + '%'
+      this.container.style.top = this.viewportVerticalPosition + '%'
     }
+  }
+  setUpperAnchorVisualOffset(v: number): void {
+    this.upperAnchorVisualOffset = v
+  }
+  setLowerAnchorVisualOffset(v: number): void {
+    this.lowerAnchorVisualOffset = v
   }
 
   // Scroll position source
@@ -748,6 +776,8 @@ export class ScrollPhysicsElement {
     currentDisplayFrame: number
     anchorState: AnchorState
     splatFrame: number
+    upperAnchorVisualOffset: number
+    lowerAnchorVisualOffset: number
   } {
     return {
       smoothedVelocity: this.smoothedVelocity,
@@ -758,6 +788,8 @@ export class ScrollPhysicsElement {
       currentDisplayFrame: this.currentDisplayFrame,
       anchorState: this.anchorState,
       splatFrame: this.splatFrame,
+      upperAnchorVisualOffset: this.upperAnchorVisualOffset,
+      lowerAnchorVisualOffset: this.lowerAnchorVisualOffset,
     }
   }
 
