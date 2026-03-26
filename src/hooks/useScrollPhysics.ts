@@ -60,7 +60,7 @@ export function useScrollPhysics(
     // Anchor
     if (options.anchorEnabled != null)                   p.setAnchorEnabled(options.anchorEnabled);
     if (options.anchorUpperScrollPosition !== undefined)  p.setAnchorUpperScrollPosition(options.anchorUpperScrollPosition);
-    if (options.anchorLowerScrollPosition != null)        p.setAnchorLowerScrollPosition(options.anchorLowerScrollPosition);
+    if (options.anchorLowerScrollPosition !== undefined)  p.setAnchorLowerScrollPosition(options.anchorLowerScrollPosition);
     if (options.viewportVerticalPosition != null)         p.setViewportVerticalPosition(options.viewportVerticalPosition);
     if (options.upperAnchorVisualOffset != null)          p.setUpperAnchorVisualOffset(options.upperAnchorVisualOffset);
     if (options.lowerAnchorVisualOffset != null)          p.setLowerAnchorVisualOffset(options.lowerAnchorVisualOffset);

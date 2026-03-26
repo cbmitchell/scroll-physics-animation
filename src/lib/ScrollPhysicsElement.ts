@@ -790,7 +790,7 @@ export class ScrollPhysicsElement {
       smoothedVelocity: this.smoothedVelocity,
       smoothedAcceleration: this.smoothedAcceleration,
       netForce: this.netForce,
-      forceIntensityLevels: this.forceIntensityLevels,
+      forceIntensityLevels: [...this.forceIntensityLevels],
       targetFrame: this.targetFrame,
       currentDisplayFrame: this.currentDisplayFrame,
       anchorState: this.anchorState,

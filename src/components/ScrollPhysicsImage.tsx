@@ -65,8 +65,10 @@ export function ScrollPhysicsImage({
   const physicsRef = useScrollPhysics(imgRef, mergedOptions);
 
   // Expose the instance to the parent if they passed a ref.
-  // Depends on imagePath/numFrames (not physicsRef, whose identity is stable) so this
-  // re-runs whenever useScrollPhysics recreates the instance, keeping externalRef current.
+  // physicsRef is a stable useRef — its identity never changes, so it can't be used
+  // as a dep to detect when useScrollPhysics recreates the instance. imagePath/numFrames
+  // are the actual triggers for recreation (see useScrollPhysics), so depending on those
+  // keeps externalRef in sync with the live instance.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (externalRef) {

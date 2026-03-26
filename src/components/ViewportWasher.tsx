@@ -582,7 +582,8 @@ export function ViewportWasher({
       backDrawRef.current?.(ox, oy)
       frontDrawRef.current?.(ox, oy)
     })
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // intentionally omits backDrawRef/frontDrawRef — refs are stable and callbacks are always current
 
   const wrapperStyle: CSSProperties = {
     position: 'absolute',
