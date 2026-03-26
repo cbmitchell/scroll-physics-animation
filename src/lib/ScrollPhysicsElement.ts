@@ -679,8 +679,9 @@ export class ScrollPhysicsElement {
   // Images
   setImagePath(path: string): void {
     this.imagePath = path
-    this.element.src = this.currentFramePath
+    this.preloadFrames()
   }
+
   setImageFrames(framesPaths: Partial<FrameNames>): void {
     this.frames = { ...this.frames, ...framesPaths }
     if (framesPaths.upward) {
