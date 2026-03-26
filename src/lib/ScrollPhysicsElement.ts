@@ -135,7 +135,7 @@ export const MOBILE_TUNABLE_OVERRIDES: Partial<TunableOpts> = {
   responsiveness: 0.45,
   accelerationWeight: 1.0,
   velocityWeight: 1.0,
-  splatSeverity: 1.0,
+  splatSeverity: 0.5,
 }
 
 const DEFAULTS: Required<Omit<ScrollPhysicsOptions, 'getScrollPosition'>> = {
@@ -575,13 +575,20 @@ export class ScrollPhysicsElement {
       this.acceleration * this.accelerationWeight +
       this.smoothedVelocity * this.velocityWeight
 
-    // Target frame (with hysteresis)
-    const mag = Math.abs(this.netForce)
-    if (mag < this.forceIntensityLevels[0]) {
+    // Target frame (with hysteresis).
+    // When splat is enabled and the object is anchored, force neutral so that
+    // currentDisplayFrame eases back to 0 while the splat animation plays and
+    // is already at neutral once the splat ends.
+    if (this.splatEnabled && this.isAnchored()) {
       this.targetFrame = 0
     } else {
-      const level = this.intensityLevel(mag)
-      this.targetFrame = this.netForce > 0 ? level : -level
+      const mag = Math.abs(this.netForce)
+      if (mag < this.forceIntensityLevels[0]) {
+        this.targetFrame = 0
+      } else {
+        const level = this.intensityLevel(mag)
+        this.targetFrame = this.netForce > 0 ? level : -level
+      }
     }
     this.lastTargetFrame = this.targetFrame
 
