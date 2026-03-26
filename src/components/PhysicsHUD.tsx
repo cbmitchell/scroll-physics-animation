@@ -145,7 +145,7 @@ export function PhysicsHUD({
         const forceScale = lastLevel * 1.2
 
         if (velCtx) drawBar(velCtx, state.smoothedVelocity, o.maxVelocity)
-        if (accelCtx) drawBar(accelCtx, state.smoothedAcceleration, o.maxVelocity * 3)
+        if (accelCtx) drawBar(accelCtx, state.smoothedAcceleration, o.maxForceValue / o.responsiveness)
         if (forceCtx) drawForceBar(forceCtx, state.netForce, forceScale, levels, state.currentDisplayFrame)
 
         if (anchorRef.current) anchorRef.current.textContent = state.anchorState

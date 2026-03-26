@@ -31,7 +31,7 @@ export type ScrollPositionProvider = () => number
 
 export interface ScrollPhysicsOptions {
   // Scroll position source
-  /** Custom scroll position provider. Defaults to () => window.pageYOffset. */
+  /** Custom scroll position provider. Defaults to () => window.scrollY. */
   getScrollPosition?: ScrollPositionProvider
 
   // Physics
@@ -143,7 +143,7 @@ export const TUNABLE_DEFAULTS: TunableOpts = {
 const DEFAULTS: Required<Omit<ScrollPhysicsOptions, 'getScrollPosition'>> = {
   ...TUNABLE_DEFAULTS,
   numFrames: 10,
-  imagePath: '../../public/images/physics_animation_frames/',
+  imagePath: '/images/physics_animation_frames/',
   anchorUpperScrollPosition: null,
   anchorLowerScrollPosition: null,
   viewportVerticalPosition: 50,
