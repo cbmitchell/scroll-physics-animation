@@ -1,4 +1,4 @@
-import { useEffect, useRef, type CSSProperties, type RefObject } from 'react'
+import { useEffect, useLayoutEffect, useRef, type CSSProperties, type RefObject } from 'react'
 
 // ── Washer geometry ──────────────────────────────────────────────────────────
 // The washer (torus-like ring) is modelled as a flat cylinder with a hole:
@@ -375,61 +375,80 @@ function drawFaces(
   }
 }
 
-// ── useViewportOrigin ────────────────────────────────────────────────────────
-// Runs a requestAnimationFrame loop that measures how far the element is from
-// the viewport centre and converts that into a perspective-origin offset
-// (ox, oy) in world-space units. Calls onUpdate only when the value changes.
+// ── Viewport-origin scheduler ─────────────────────────────────────────────────
+// A single module-level requestAnimationFrame loop shared across all
+// ViewportWasher instances. Each washer registers one element for position
+// measurement; both its canvas layers share the result. This gives one
+// getBoundingClientRect() call per washer per frame instead of two (one per
+// canvas), and one RAF loop total instead of 2N for N washers.
 //
-// Effect: as you scroll the washer off-centre, the 3-D projection shifts so
-// the washer always appears to be viewed from the viewport centre — matching
-// the illusion used by ViewportPerspectiveBox via CSS perspective-origin.
-function useViewportOrigin(
-  wrapperRef: RefObject<HTMLDivElement | null>,
-  onUpdate: (ox: number, oy: number) => void,
-) {
-  useEffect(() => {
-    // Maximum world-space offset applied at the viewport edge
-    const MAX_OX = 300
-    const MAX_OY = 200
-    let rafId: number
-    let prevOx = NaN
-    let prevOy = NaN
+// Effect: as each washer scrolls off-centre, its 3-D projection shifts so it
+// always appears to be viewed from the viewport centre.
 
-    const update = () => {
-      if (wrapperRef.current) {
-        const rect = wrapperRef.current.getBoundingClientRect()
+// Maximum world-space offset applied at the viewport edge.
+const MAX_OX = 300
+const MAX_OY = 200
 
-        // Normalised offset: 0 when the element is centred, ±1 at the viewport edge
-        const normX =
-          (rect.left + rect.width / 2 - window.innerWidth / 2) /
-          (window.innerWidth / 2)
-        const normY =
-          (rect.top + rect.height / 2 - window.innerHeight / 2) /
-          (window.innerHeight / 2)
+type PositionCallback = (ox: number, oy: number) => void
 
-        // Negate: if the element is to the right, shift the vanishing point left
-        // so the projection looks as if the viewer is centred on the viewport.
-        const ox = -normX * MAX_OX
-        const oy = -normY * MAX_OY
+interface WasherRegistration {
+  callbacks: Set<PositionCallback>
+  prevOx: number
+  prevOy: number
+}
 
-        if (ox !== prevOx || oy !== prevOy) {
-          prevOx = ox
-          prevOy = oy
-          onUpdate(ox, oy)
-        }
-      }
-      rafId = requestAnimationFrame(update)
+const _registrations = new Map<HTMLElement, WasherRegistration>()
+let _schedulerRafId: number | null = null
+
+function _schedulerTick(): void {
+  for (const [el, reg] of _registrations) {
+    const rect = el.getBoundingClientRect()
+    // Normalised offset: 0 when centred, ±1 at the viewport edge.
+    const normX =
+      (rect.left + rect.width / 2 - window.innerWidth / 2) /
+      (window.innerWidth / 2)
+    const normY =
+      (rect.top + rect.height / 2 - window.innerHeight / 2) /
+      (window.innerHeight / 2)
+    // Negate: element to the right → shift vanishing point left so the
+    // projection looks as if the viewer is centred on the viewport.
+    const ox = -normX * MAX_OX
+    const oy = -normY * MAX_OY
+    if (ox !== reg.prevOx || oy !== reg.prevOy) {
+      reg.prevOx = ox
+      reg.prevOy = oy
+      for (const cb of reg.callbacks) cb(ox, oy)
     }
+  }
+  _schedulerRafId = requestAnimationFrame(_schedulerTick)
+}
 
-    rafId = requestAnimationFrame(update)
-    return () => cancelAnimationFrame(rafId)
-  }, [])
+/** Register a callback to receive (ox, oy) updates each frame. Returns cleanup. */
+function _registerPosition(el: HTMLElement, cb: PositionCallback): () => void {
+  if (!_registrations.has(el)) {
+    _registrations.set(el, { callbacks: new Set(), prevOx: NaN, prevOy: NaN })
+  }
+  _registrations.get(el)!.callbacks.add(cb)
+  if (_schedulerRafId === null) {
+    _schedulerRafId = requestAnimationFrame(_schedulerTick)
+  }
+  return () => {
+    const reg = _registrations.get(el)
+    if (reg) {
+      reg.callbacks.delete(cb)
+      if (reg.callbacks.size === 0) _registrations.delete(el)
+    }
+    if (_registrations.size === 0 && _schedulerRafId !== null) {
+      cancelAnimationFrame(_schedulerRafId)
+      _schedulerRafId = null
+    }
+  }
 }
 
 // ── WasherCanvas ─────────────────────────────────────────────────────────────
 // Internal component: a canvas that fills its parent (position absolute, inset 0)
-// and draws the given face list. Redraws whenever the viewport-relative position
-// changes, and resizes the canvas element whenever the window resizes.
+// and draws the given face list. The parent drives redraws by calling
+// drawCallbackRef.current(ox, oy) from the shared position scheduler.
 function WasherCanvas({
   faces,
   seams,
@@ -438,6 +457,7 @@ function WasherCanvas({
   colorTop,
   colorBot,
   focalLength = DEFAULT_FOCAL_LENGTH,
+  drawCallbackRef,
 }: {
   faces: Face[]
   seams: Seam[]
@@ -446,22 +466,31 @@ function WasherCanvas({
   colorTop?: string
   colorBot?: string
   focalLength?: number
+  drawCallbackRef: RefObject<PositionCallback | null>
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const wrapperRef = useRef<HTMLDivElement>(null)
   const posRef = useRef({ ox: 0, oy: 0 })
   const focalLengthRef = useRef(focalLength)
 
-  useViewportOrigin(wrapperRef, (ox, oy) => {
-    posRef.current = { ox, oy }
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-    drawFaces(ctx, faces, seams, ox, oy, drawFlatEdges, colorTop, colorBot, focalLengthRef.current)
+  // Expose the draw function to the parent via drawCallbackRef.
+  // useLayoutEffect (no deps) re-runs after every render, before regular effects,
+  // which ensures the ref is restored after React StrictMode's cleanup/re-run cycle.
+  useLayoutEffect(() => {
+    drawCallbackRef.current = (ox, oy) => {
+      posRef.current = { ox, oy }
+      const canvas = canvasRef.current
+      if (!canvas) return
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return
+      drawFaces(ctx, faces, seams, ox, oy, drawFlatEdges, colorTop, colorBot, focalLengthRef.current)
+    }
   })
+  // Clear on unmount so the parent never calls a stale reference.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => () => { drawCallbackRef.current = null }, [drawCallbackRef])
 
-  // Redraw when focalLength changes (the RAF loop only fires on position change)
+  // Redraw when focalLength changes.
   useEffect(() => {
     focalLengthRef.current = focalLength
     const canvas = canvasRef.current
@@ -472,9 +501,8 @@ function WasherCanvas({
     drawFaces(ctx, faces, seams, ox, oy, drawFlatEdges, colorTop, colorBot, focalLength)
   }, [focalLength]) // intentionally omitting faces/seams/drawFlatEdges/colorTop/colorBot — module-level constants or stable props
 
-  // Keep canvas pixel dimensions in sync with the wrapper's layout size.
-  // (Assigning canvas.width/height also clears the canvas, so the next RAF
-  // tick will redraw automatically.)
+  // Keep canvas pixel dimensions in sync with the wrapper's layout size and
+  // redraw immediately after resize to avoid a blank-canvas flash.
   useEffect(() => {
     const resize = () => {
       const canvas = canvasRef.current
@@ -482,11 +510,16 @@ function WasherCanvas({
       if (!canvas || !wrapper) return
       canvas.width = wrapper.clientWidth
       canvas.height = wrapper.clientHeight
+      const ctx = canvas.getContext('2d')
+      if (ctx) {
+        const { ox, oy } = posRef.current
+        drawFaces(ctx, faces, seams, ox, oy, drawFlatEdges, colorTop, colorBot, focalLengthRef.current)
+      }
     }
     resize()
     window.addEventListener('resize', resize)
     return () => window.removeEventListener('resize', resize)
-  }, [])
+  }, []) // intentionally omitting faces/seams/drawFlatEdges/colorTop/colorBot — module-level constants or stable props
 
   return (
     <div
@@ -535,6 +568,22 @@ export function ViewportWasher({
   colorBot,
   focalLength,
 }: ViewportWasherProps = {}) {
+  const measureRef = useRef<HTMLDivElement>(null)
+  const backDrawRef = useRef<PositionCallback | null>(null)
+  const frontDrawRef = useRef<PositionCallback | null>(null)
+
+  // Register one position measurement for this washer. Both canvas layers
+  // share the result — one getBoundingClientRect() per washer per frame.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const el = measureRef.current
+    if (!el) return
+    return _registerPosition(el, (ox, oy) => {
+      backDrawRef.current?.(ox, oy)
+      frontDrawRef.current?.(ox, oy)
+    })
+  }, [])
+
   const wrapperStyle: CSSProperties = {
     position: 'absolute',
     width: SIZE,
@@ -545,7 +594,7 @@ export function ViewportWasher({
 
   return (
     <>
-      <div style={{ ...wrapperStyle, zIndex: zBack }}>
+      <div ref={measureRef} style={{ ...wrapperStyle, zIndex: zBack }}>
         <WasherCanvas
           faces={BACK_FACES}
           seams={BACK_SEAMS}
@@ -553,6 +602,7 @@ export function ViewportWasher({
           colorTop={colorTop}
           colorBot={colorBot}
           focalLength={focalLength}
+          drawCallbackRef={backDrawRef}
         />
       </div>
       <div style={{ ...wrapperStyle, zIndex: zFront }}>
@@ -564,6 +614,7 @@ export function ViewportWasher({
           colorTop={colorTop}
           colorBot={colorBot}
           focalLength={focalLength}
+          drawCallbackRef={frontDrawRef}
         />
       </div>
     </>
