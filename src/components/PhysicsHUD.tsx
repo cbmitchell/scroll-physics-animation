@@ -1,7 +1,7 @@
 import { useEffect, useRef, type MutableRefObject } from 'react'
 import type { ScrollPhysicsElement, TunableOpts } from '../lib/ScrollPhysicsElement'
 
-const BAR_W = 140
+const BAR_W = 210
 const BAR_H = 8
 
 function drawBar(
