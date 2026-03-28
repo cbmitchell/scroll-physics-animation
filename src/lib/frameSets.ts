@@ -32,7 +32,7 @@ export interface FrameSetConfig {
 
 export const FRAME_SETS = {
   default: {
-    imagePath: '/images/physics_animation_frames/',
+    imagePath: import.meta.env.BASE_URL + 'images/physics_animation_frames/',
     numFrames: 10,
     upperAnchorVisualOffset: 82,
     lowerAnchorVisualOffset: 90,
