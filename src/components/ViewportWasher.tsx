@@ -487,7 +487,6 @@ function WasherCanvas({
     }
   })
   // Clear on unmount so the parent never calls a stale reference.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => () => { drawCallbackRef.current = null }, [drawCallbackRef])
 
   // Redraw when focalLength changes.
@@ -499,6 +498,7 @@ function WasherCanvas({
     if (!ctx) return
     const { ox, oy } = posRef.current
     drawFaces(ctx, faces, seams, ox, oy, drawFlatEdges, colorTop, colorBot, focalLength)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focalLength]) // intentionally omitting faces/seams/drawFlatEdges/colorTop/colorBot — module-level constants or stable props
 
   // Keep canvas pixel dimensions in sync with the wrapper's layout size and
@@ -519,6 +519,7 @@ function WasherCanvas({
     resize()
     window.addEventListener('resize', resize)
     return () => window.removeEventListener('resize', resize)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // intentionally omitting faces/seams/drawFlatEdges/colorTop/colorBot — module-level constants or stable props
 
   return (
@@ -574,7 +575,6 @@ export function ViewportWasher({
 
   // Register one position measurement for this washer. Both canvas layers
   // share the result — one getBoundingClientRect() per washer per frame.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const el = measureRef.current
     if (!el) return
@@ -582,7 +582,6 @@ export function ViewportWasher({
       backDrawRef.current?.(ox, oy)
       frontDrawRef.current?.(ox, oy)
     })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []) // intentionally omits backDrawRef/frontDrawRef — refs are stable and callbacks are always current
 
   const wrapperStyle: CSSProperties = {

@@ -108,7 +108,7 @@ export function PhysicsHUD({
 }) {
   // Keep opts accessible inside the rAF loop without re-running the effect
   const optsRef = useRef(opts)
-  optsRef.current = opts
+  useEffect(() => { optsRef.current = opts }, [opts])
 
   const velCanvasRef = useRef<HTMLCanvasElement>(null)
   const accelCanvasRef = useRef<HTMLCanvasElement>(null)

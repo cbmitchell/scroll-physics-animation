@@ -52,7 +52,7 @@ export function AnchorIndicators({
     function update() {
       setPositions(
         computePositions(
-          container,
+          container!,
           anchorUpperScrollPosition,
           anchorLowerScrollPosition,
           viewportVerticalPosition,

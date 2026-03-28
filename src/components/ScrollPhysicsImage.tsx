@@ -57,11 +57,11 @@ export function ScrollPhysicsImage({
   // as a dep to detect when useScrollPhysics recreates the instance. imagePath/numFrames
   // are the actual triggers for recreation (see useScrollPhysics), so depending on those
   // keeps externalRef in sync with the live instance.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (externalRef) {
       externalRef.current = physicsRef.current;
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [externalRef, mergedOptions.frameSet?.imagePath, mergedOptions.frameSet?.numFrames]);
 
   return (
