@@ -1,73 +1,133 @@
-# React + TypeScript + Vite
+# Scroll Physics Animation
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React demo of an animated element that reacts to page scrolling with simulated physical behavior — frame selection, velocity/acceleration smoothing, anchor snapping, and splat deformation.
 
-Currently, two official plugins are available:
+## Demo Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Scroll-driven frame animation with EMA-smoothed velocity and acceleration
+- Anchor system: snap the element to upper/lower positions on the page
+- Splat animation: element deforms when hitting an anchor
+- Real-time physics HUD showing live internal state
+- Interactive controls panel to tune all physics parameters
+- 3D viewport washer rings rendered via a custom canvas renderer
+- Mobile-responsive with per-breakpoint physics overrides
 
-## React Compiler
+## Dev Commands
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev       # Start Vite dev server
+npm run build     # Type-check + production build
+npm run lint      # Run ESLint
+npm run preview   # Preview production build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Using the Physics Component
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+The `ScrollPhysicsImage` component is designed to be extracted and dropped into any React project.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Minimal usage
+
+```tsx
+import { ScrollPhysicsImage } from './components/ScrollPhysicsImage';
+import { FRAME_SETS } from './lib/frameSets';
+
+<ScrollPhysicsImage frameSet={FRAME_SETS.default} />
 ```
+
+### Bringing your own frames
+
+Provide a directory of sequentially numbered PNGs (e.g. `frame_0.png` … `frame_9.png`):
+
+```tsx
+<ScrollPhysicsImage
+  frameSet={{
+    imagePath: '/images/my-frames/',
+    numFrames: 10,
+  }}
+  responsiveness={0.4}
+  anchorEnabled={true}
+  splatEnabled={true}
+/>
+```
+
+### Scrollable container (mobile Safari)
+
+Pass a `scrollContainerRef` to read `scrollTop` from a container element instead of `window.scrollY`, which avoids issues with mobile Safari's dynamic browser chrome:
+
+```tsx
+const containerRef = useRef<HTMLDivElement>(null);
+
+<div ref={containerRef} style={{ overflowY: 'scroll', height: '100dvh' }}>
+  <ScrollPhysicsImage scrollContainerRef={containerRef} frameSet={FRAME_SETS.default} />
+</div>
+```
+
+### Mobile overrides
+
+```tsx
+<ScrollPhysicsImage
+  frameSet={FRAME_SETS.default}
+  responsiveness={0.3}
+  mobileOverrides={{ responsiveness: 0.5 }}
+/>
+```
+
+## Physics Options
+
+| Option | Type | Description |
+|---|---|---|
+| `frameSet` | `FrameSetConfig` | Image path, frame count, and anchor visual offsets |
+| `responsiveness` | `number` | How strongly scroll force drives frame selection |
+| `mass` | `number` | Resistance to force changes |
+| `velocityWeight` | `number` | Contribution of velocity to the force signal |
+| `accelerationWeight` | `number` | Contribution of acceleration to the force signal |
+| `velocitySmoothingFactor` | `number` | EMA alpha for velocity smoothing |
+| `accelerationSmoothingFactor` | `number` | EMA alpha for acceleration smoothing |
+| `thresholdMode` | `'linear' \| 'exponential'` | Frame threshold distribution |
+| `baseForceThreshold` | `number` | Minimum force needed to leave the neutral frame |
+| `maxForceValue` | `number` | Force value that maps to the last frame |
+| `anchorEnabled` | `boolean` | Enable upper/lower scroll anchors |
+| `anchorUpperScrollPosition` | `number \| null` | Scroll Y for the upper anchor |
+| `anchorLowerScrollPosition` | `number \| null` | Scroll Y for the lower anchor |
+| `viewportVerticalPosition` | `number` | Viewport % for element position while following (default 50) |
+| `splatEnabled` | `boolean` | Enable splat deformation on anchor impact |
+| `splatSeverity` | `number` | How hard the splat hits |
+| `splatRecoverySpeed` | `number` | How quickly the element recovers from a splat |
+
+## Architecture
+
+```
+src/
+  lib/
+    ScrollPhysicsElement.ts   # Vanilla JS physics engine (no React)
+    frameSets.ts              # Frame set catalog
+  hooks/
+    useScrollPhysics.ts       # React lifecycle wrapper for the engine
+  components/
+    ScrollPhysicsImage.tsx    # Drop-in React component
+    ViewportWasher.tsx        # 3D canvas ring renderer
+    ControlsPanel.tsx         # Interactive tuning UI
+    PhysicsHUD.tsx            # Real-time debug overlay
+    AnchorIndicators.tsx      # Visual anchor position indicators
+  App.tsx                     # Demo app
+```
+
+The physics engine (`ScrollPhysicsElement`) has no React dependencies and can be used standalone:
+
+```ts
+import { ScrollPhysicsElement } from './lib/ScrollPhysicsElement';
+
+const physics = new ScrollPhysicsElement(imgElement, {
+  frameSet: { imagePath: '/frames/', numFrames: 10 },
+  responsiveness: 0.3,
+});
+
+// later:
+physics.destroy();
+```
+
+## Stack
+
+- React 19
+- TypeScript (strict)
+- Vite
