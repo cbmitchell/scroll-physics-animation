@@ -34,10 +34,6 @@ jobs:
 
       - name: Build
         run: npm run build
-        env:
-          # Vite needs the repo name as the base path for GitHub Pages project sites.
-          # Remove this if you're using a custom domain or a <username>.github.io repo.
-          VITE_BASE: /${{ github.event.repository.name }}/
 
       - uses: actions/upload-pages-artifact@v3
         with:
