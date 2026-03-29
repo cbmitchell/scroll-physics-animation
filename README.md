@@ -23,9 +23,9 @@ npm run preview   # Preview production build
 
 ## Using the Physics Component
 
-The `ScrollPhysicsImage` component is designed to be extracted and dropped into any React project.
+The `ScrollPhysicsImage` component is designed to be extracted and dropped into any React project. At minimum, it just needs a couple other files to work properly, as shown below.
 
-### Minimal usage
+### Minimal Usage
 
 ```tsx
 import { ScrollPhysicsImage } from './components/ScrollPhysicsImage';
@@ -34,9 +34,15 @@ import { FRAME_SETS } from './lib/frameSets';
 <ScrollPhysicsImage frameSet={FRAME_SETS.default} />
 ```
 
-### Bringing your own frames
+### Providing Custom Settings
 
-Provide a directory of sequentially numbered PNGs (e.g. `frame_0.png` … `frame_9.png`):
+The `ScrollPhysicsImage` component takes any of the props defined in the Physics Options section below. For loading the frames, please note that frames must be PNGs, and they must have the correct prefixing in order to be picked up correctly. At time of writing, [the required prefixes are as follows](https://github.com/cbmitchell/scroll-physics-animation/blob/cb8cdb2adbe932743d2332fbffa283dd709603ed/src/lib/ScrollPhysicsElement.ts#L342-L364):
+- `upward-i.png`
+- `downward-i.png`
+- `up-splat-i.png`
+- `down-splat-i.png`
+
+Providing props to the component would look something like this:
 
 ```tsx
 <ScrollPhysicsImage
@@ -50,7 +56,7 @@ Provide a directory of sequentially numbered PNGs (e.g. `frame_0.png` … `frame
 />
 ```
 
-### Scrollable container (mobile Safari)
+### Scrollable Container (mobile Safari)
 
 Pass a `scrollContainerRef` to read `scrollTop` from a container element instead of `window.scrollY`, which avoids issues with mobile Safari's dynamic browser chrome:
 
@@ -62,7 +68,8 @@ const containerRef = useRef<HTMLDivElement>(null);
 </div>
 ```
 
-### Mobile overrides
+### Mobile Overrides
+You can set overrides for the setting defaults which will take effect when the project is being viewed on mobile devices (or, more specifically, touch-enabled devices). This can be useful since mobile browsers behave differently than desktop browsers, resulting in the need for some fine-tuning.
 
 ```tsx
 <ScrollPhysicsImage
