@@ -112,13 +112,45 @@
   gap: 4px;
 }
 
+.controls-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
 .controls-title {
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #7c8299;
-  margin: 0 0 12px;
+  margin: 0;
+}
+
+.controls-info-btn {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid #2a2d3a;
+  background: transparent;
+  color: #4a5068;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+  margin-right: 180px;
+}
+
+.controls-info-btn:hover,
+.controls-info-btn--active {
+  background: #1a1e2e;
+  color: #a0a8c0;
+  border-color: #5a6080;
 }
 
 /* ── Sections ────────────────────────────────────────────────────────────── */
@@ -157,6 +189,14 @@
   overflow: hidden;
   text-overflow: ellipsis;
   font-family: ui-monospace, Consolas, monospace;
+}
+
+.ctrl-desc {
+  font-size: 10px;
+  color: #4a5068;
+  line-height: 1.5;
+  margin: 0 0 4px;
+  padding-left: 2px;
 }
 
 .ctrl-value {
