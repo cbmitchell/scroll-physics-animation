@@ -22,7 +22,7 @@ export default function App() {
   const [hudOpen, setHudOpen] = useState(false)
   const [washersVisible, setWashersVisible] = useState(true)
   const [stripesVisible, setStripesVisible] = useState(true)
-  const [anchorIndicatorsVisible, setAnchorIndicatorsVisible] = useState(false)
+  const [anchorIndicatorsVisible, setAnchorIndicatorsVisible] = useState(true)
   const [washerFocalLength, setWasherFocalLength] =
     useState(DEFAULT_FOCAL_LENGTH)
 
